@@ -12,9 +12,21 @@ Version 1.0.0
 		<script src="full-year-calendar.js"></script>
 	```
 	
-3. Initialize pugin.
+3. Initialize plugin.
 	```javascript
 		$(function(){
 			$('div').fullYearCalendar();
 		});
+	```
+	
+## Options
+You can initialize the full year calendar with following options
+	```javascript
+		yearStart: new Date(),
+    		yearEnd: new Date().setFullYear(new Date().getFullYear() + 1),
+    		weekDaysHolidays: [0],
+    		publicHolidays: [],
+    		niwds: [],
+    		halfDays: [],
+    		noSchools: []
 	```
