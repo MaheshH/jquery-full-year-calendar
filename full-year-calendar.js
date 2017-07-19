@@ -7,24 +7,31 @@
   'use strict';
 
   var _default = {
-    year: new Date().getFullYear(),
-    isSundayHoliday: false,
+    yearStart: new Date(),
+    yearEnd: new Date().setFullYear(new Date().getFullYear() + 1),
+    weekDaysHolidays: [0],
     publicHolidays: [],
     niwds: [],
-    halfDays: []
+    halfDays: [],
+    noSchools: []
   };
 
   $.fn.fullYearCalendar = function(options) {
     options = $.extend(_default, options);
     this.each(function(index, element) {
-      var months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
+      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       var content = $('<div class="row fyc-calendar"></div>');
-      var monthContainer="";
-      $.each(months, function(monthIndex, monthName) {
-        monthContainer =$('<div class="col-sm-6 table-responsive" id="'+ monthName +'"></div>');
-        monthContainer.append(_getMonthTable(monthIndex, monthName, options));
+      var monthContainer=""; var monthName = ""; var monthIndex = 0;
+      var yearStart = moment(options.yearStart);
+      var yearEnd = moment(options.yearEnd);
+      while(yearEnd.isAfter(yearStart)){
+        monthIndex = yearStart.month();
+        monthName = months[monthIndex];
+        monthContainer = $('<div class="col-sm-6 table-responsive" id="'+ monthName +'"></div>');
+        monthContainer.append(_getMonthTable(monthIndex, monthName, yearStart, options));
         content.append(monthContainer);
-      });
+        yearStart.add(1, 'months');
+      }
       $(element).append(content);
     });
     return {
@@ -32,13 +39,8 @@
     }
   }
 
-  function _getMonthTable(monthIndex, monthName, options) {
-    monthIndex += 4;
-    var year = options.year;
-    if(monthIndex > 12){
-      year++;
-      monthIndex -= 12;
-    }
+  function _getMonthTable(monthIndex, monthName, yearStart, options) {
+    var year = yearStart.year();
     var table = '<table class="table fyc-calendar-table"><thead><tr><th colspan="7" class="text-center">'+ monthName +' '+ year +'</th></tr>';
     table += '<tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>';
     var tbody = _getMonthTableBody(monthIndex, year, options);
@@ -50,8 +52,8 @@
     var tbody = '<tbody><tr>';
     var day = 1;
     var counter = 0;
-    var numberOfDays = moment(''+year+'-'+monthIndex, 'YYYY-MM').daysInMonth();
-    var firstDayOfMonth = moment([year, (monthIndex - 1)]).day();
+    var numberOfDays = moment(''+ year +'-'+ (monthIndex + 1), 'YYYY-MM').daysInMonth();
+    var firstDayOfMonth = moment([year, monthIndex]).day();
     if(firstDayOfMonth === 0){
       firstDayOfMonth = 7;
     }
@@ -66,30 +68,20 @@
         counter = 0;
         tbody += '</tr><tr>';
       }
-      var currentDate = moment(''+year+'-'+monthIndex+'-'+day, 'YYYY-MM-DD');
+      var currentDate = moment(''+ year +'-'+ (monthIndex + 1) +'-'+ day, 'YYYY-MM-DD');
       var currentDateFormated = currentDate.format('YYYY-MM-DD');
       var classList = 'fyc-day ';
-      if(options.isSundayHoliday && currentDate.day() == 0){
+      if(options.weekDaysHolidays.indexOf(currentDate.day()) > -1 || options.noSchools.indexOf(currentDateFormated) > -1){
         classList += 'fyc-holiday ';
-        if(options.publicHolidays.indexOf(currentDateFormated) > -1){
-          classList += 'fyc-public-holiday ';
-        }
-        if(options.niwds.indexOf(currentDateFormated) > -1) {
-          classList += 'fyc-niwd-holiday ';
-        }
-        if(options.halfDays.indexOf(currentDateFormated) > -1) {
-          classList += 'fyc-halfDay-holiday ';
-        }
-      } else{
-        if(options.publicHolidays.indexOf(currentDateFormated) > -1){
-          classList += 'fyc-public-holiday ';
-        }
-        if(options.niwds.indexOf(currentDateFormated) > -1) {
-          classList += 'fyc-niwd-holiday ';
-        }
-        if(options.halfDays.indexOf(currentDateFormated) > -1) {
-          classList += 'fyc-halfDay-holiday ';
-        }
+      }
+      if(options.publicHolidays.indexOf(currentDateFormated) > -1){
+        classList += 'fyc-public-holiday ';
+      }
+      if(options.niwds.indexOf(currentDateFormated) > -1) {
+        classList += 'fyc-niwd-holiday ';
+      }
+      if(options.halfDays.indexOf(currentDateFormated) > -1) {
+        classList += 'fyc-halfDay-holiday ';
       }
       tbody += '<td data-fyc-date=' + currentDateFormated + ' class="' + classList + '">' + day + '</td>';
       counter++;

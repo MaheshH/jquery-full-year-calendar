@@ -12,14 +12,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <script src="full-year-calendar.min.js"></script>
+    <script src="full-year-calendar.js"></script>
     <script>
     $(function(){
       var fyc = $('#full-year-calendar').fullYearCalendar({
-        isSundayHoliday:true,
+        yearStart: new Date('2018-06-01'),
+        yearEnd : new Date('2019-06-01'),
+        weekDaysHolidays: [0, 1],
         publicHolidays: ['2017-05-25', '2017-08-15'],
         niwds: ['2017-05-26'],
-        halfDays: ['2017-05-27']
+        halfDays: ['2017-05-27'],
+        noSchools : ['2017-11-22']
       });
       fyc.addHoliday({type: 'niwds', from:'2017-05-05'});
     });
