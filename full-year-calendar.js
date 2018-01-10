@@ -1,7 +1,6 @@
 /*
-  Developed By Mahesh Hegde to use in MySchool Dashboard.
+  Developed By Mahesh Hegde.
   Created Date : 16-May-2017
-  Created For : MySchool Dashboard [NDTV WW]
 */
 (function($){
   'use strict';
